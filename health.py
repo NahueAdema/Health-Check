@@ -3,7 +3,8 @@ from datetime import datetime, timezone
 from fastapi.responses import JSONResponse
 import json
 import uuid
-from deps import RedisDep  
+from deps import RedisDep
+from auth.auth import validate_token 
 
 router = APIRouter()
 
@@ -56,24 +57,24 @@ async def ping(request: Request, redis: RedisDep):
     )
 
 @router.get("/get-responses", summary="Get all health/ping logs", tags=["Health"])
-async def get_responses(redis: RedisDep):
+async def get_responses(
+    redis: RedisDep,
+    token: str = Depends(validate_token) 
+):
     """
     Devuelve todos los registros guardados de /health y /ping.
+    Requiere un token válido en el header Authorization.
     """
-    # Obtener todas las claves que coincidan con el patrón
     keys = await redis.keys("health_log:*")
     
     responses = []
     for key in keys:
-        # Obtener el valor JSON
         data = await redis.get(key)
         if data:
             log_data = json.loads(data)
-            # Opcional: agregar el ID de la clave
-            log_data["id"] = key.split(":", 1)[1]  # extrae el UUID
+            log_data["id"] = key.split(":", 1)[1]
             responses.append(log_data)
     
-    # Ordenar por timestamp (más reciente primero)
     responses.sort(key=lambda x: x["timestamp"], reverse=True)
     
     return JSONResponse(
