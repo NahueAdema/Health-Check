@@ -8,7 +8,7 @@ def create_app(use_lifespan: bool = True):
     if use_lifespan:
         @asynccontextmanager
         async def lifespan(app: FastAPI):
-            deps.redis_client = redis.Redis(host="localhost", port=6379, decode_responses=True)
+            deps.redis_client = redis.Redis(host="localhost", port=6380, decode_responses=True)
             try:
                 await deps.redis_client.ping()
                 print("✅ Conectado a Redis")

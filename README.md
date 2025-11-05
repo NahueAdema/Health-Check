@@ -30,3 +30,23 @@ redis-cli GET "health_log:"
 Ver cuanto tiempo le queda:
 
 redis-cli TTL "health_log:"
+
+# redis-cli
+
+# Token 1
+
+SET token:abc123 "activo" EX 3600
+
+# Token 2
+
+SET token:xyz789 "activo" EX 3600
+
+# Token 3 (puedes usar cualquier texto: UUID, JWT, etc.)
+
+SET token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... "activo" EX 3600
+
+### usarlos en tu API
+
+Authorization: Bearer abc123
+Authorization: Bearer xyz789
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
